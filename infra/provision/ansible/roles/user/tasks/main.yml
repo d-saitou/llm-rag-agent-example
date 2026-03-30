@@ -1,0 +1,13 @@
+- name: ユーザー作成
+  user:
+    name: "{{ wsl_user_name }}"
+    password: "{{ wsl_user_password | password_hash('sha512') }}"
+    shell: /bin/bash
+    groups: sudo
+    append: yes
+
+- name: sudoers設定
+  copy:
+    dest: "/etc/sudoers.d/{{ wsl_user_name }}"
+    content: "{{ wsl_user_name }} ALL=(ALL) ALL"
+    mode: "0440"

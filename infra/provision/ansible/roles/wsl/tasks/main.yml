@@ -1,0 +1,6 @@
+- name: wsl.conf設定
+  copy:
+    dest: /etc/wsl.conf
+    content: |
+      [user]
+      default={{ wsl_user_name }}

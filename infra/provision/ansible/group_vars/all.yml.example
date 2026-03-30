@@ -1,0 +1,1 @@
+# infra/provision/ansible/group_vars/all.yml は bootstrap-dev-env.ps1 によって .env を変換して自動生成される。

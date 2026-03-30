@@ -21,7 +21,10 @@
     "files.encoding": "utf8",
     "files.eol": "\n",
     "files.insertFinalNewline": true,
-    "files.trimTrailingWhitespace": true
+    "files.trimTrailingWhitespace": true,
+    "[powershell]": {
+      "files.encoding": "utf8bom"
+    }
   },
   "extensions": {
     "recommendations": [

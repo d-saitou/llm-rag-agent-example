@@ -1,1 +1,3 @@
 sandbox/
+.env
+infra/provision/ansible/group_vars/all.yml
