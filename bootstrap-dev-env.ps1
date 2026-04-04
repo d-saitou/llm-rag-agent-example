@@ -40,13 +40,14 @@ function Write-Log {
 .DESCRIPTION
     指定URLからファイルをダウンロードし、指定パスに保存する。既にファイルが存在する場合はダウンロードをスキップする。
 #>
-function Ensure-File {
+function Get-File {
     param([string]$Url, [string]$Path)
     if (!(Test-Path $Path)) {
         Write-Log "ファイルダウンロード開始... (${Url})"
         try {
-            Import-Module BitsTransfer
-            Start-BitsTransfer -Source $Url -Destination $Path -Priority Foreground -RetryTimeout 60 -RetryInterval 60 -ErrorAction Stop
+            # Import-Module BitsTransfer
+            # Start-BitsTransfer -Source $Url -Destination $Path -Priority Foreground -RetryTimeout 60 -RetryInterval 60 -ErrorAction Stop
+            Invoke-WebRequest -Uri $Url -OutFile $Path
         } catch {
             if (Test-Path $Path) {
                 Remove-Item $Path -Force
@@ -87,19 +88,24 @@ function Convert-ToWslPath {
 #>
 function Test-SystemRequirements {
   Write-Log "システムチェック..."
+
   if (!(Get-Command wsl -ErrorAction SilentlyContinue)) {
     throw "WSL が見つかりません"
   }
+
   if (!(Get-Command docker -ErrorAction SilentlyContinue)) {
     throw "Docker CLI が見つかりません"
   }
+
   docker info > $null 2>&1
   if ($LASTEXITCODE -ne 0) {
     throw "Docker が起動していません"
   }
+
   if (!(Get-Command code -ErrorAction SilentlyContinue)) {
     throw "VS Code が見つかりません"
   }
+
   $isInstalledRemoteExt = code --list-extensions | Select-String "ms-vscode-remote.vscode-remote-extensionpack"
   if (!$isInstalledRemoteExt) {
     throw "VS Code に拡張 (ms-vscode-remote.vscode-remote-extensionpack) がインストールされていません"
@@ -120,12 +126,18 @@ function Read-Env {
   if (!(Test-Path $Path)) {
     throw ".env が見つかりません"
   }
+
   Get-Content $Path | ForEach-Object {
     if ($_ -match "^\s*#") { return }
     if ($_ -match "^\s*$") { return }
     if ($_ -notmatch "=") { return }
     $key, $value = $_ -split "=", 2
-    [System.Environment]::SetEnvironmentVariable($key, $value)
+    $key = $key.Trim()
+    $value = $value.Trim().Trim("'").Trim('"')
+    if ($key) {
+      $ExecutionContext.SessionState.Path.SetLocation($PSScriptRoot)
+      Set-Content "env:$key" $value
+    }
   }
 }
 
@@ -135,16 +147,19 @@ function Read-Env {
 .DESCRIPTION
     WSL インスタンスが存在しない場合、新しいインスタンスを作成する。
 #>
-function Ensure-WSL {
-  $exists = wsl -l -q | ForEach-Object { $_.Trim() } | Where-Object { $_ -eq $env:WSL_INSTANCE_NAME }
+function Import-WSLInstance {
+  # $exists = wsl -l -q | ForEach-Object { $_.Trim() } | Where-Object { $_ -eq $env:WSL_INSTANCE_NAME }
+  $wslList = wsl -l -q | Out-String
+  $exists = $wslList -replace "`0", "" -split "`r`n" | ForEach-Object { $_.Trim() } | Where-Object { $_ -ne "" -and $_ -eq $env:WSL_INSTANCE_NAME }
   if ($exists) {
     return
   }
-  Write-Log "WSL インスタンス作成..."
   if (!(Test-Path $env:WSL_INSTANCE_PATH)) {
     New-Item -ItemType Directory -Path $env:WSL_INSTANCE_PATH | Out-Null
   }
-  Ensure-File $env:DISTRO_IMAGE_URL $env:DISTRO_IMAGE_PATH
+  Get-File $env:DISTRO_IMAGE_URL $env:DISTRO_IMAGE_PATH
+
+  Write-Log "WSL インスタンス作成..."
   wsl --import $env:WSL_INSTANCE_NAME $env:WSL_INSTANCE_PATH $env:DISTRO_IMAGE_PATH
   if ($LASTEXITCODE -ne 0) {
     throw "WSL インスタンス作成失敗"
@@ -157,7 +172,7 @@ function Ensure-WSL {
 .DESCRIPTION
     WSL 内で Ansible がインストールされていない場合、Ansible をインストールする。
 #>
-function Ensure-Ansible {
+function Install-Ansible {
   Write-Log "Ansibleインストール..."
   $setupScript = @"
 if command -v ansible >/dev/null 2>&1; then
@@ -193,7 +208,7 @@ function Convert-EnvToAnsibleGroupVars {
     if ($line -notmatch "=") { continue }
     $key, $value = $line -split "=", 2
     $key = $key.Trim().ToLower()
-    $value = $value.Trim().Trim('"') -replace '\\', '\\' -replace '"', '\"'
+    $value = $value.Trim().Trim("'").Trim('"') -replace '\\', '\\' -replace '"', '\"'
     $yaml += "${key}: `"${value}`""
   }
   $dir = Split-Path $OutputFile
@@ -201,7 +216,8 @@ function Convert-EnvToAnsibleGroupVars {
     New-Item -ItemType Directory -Path $dir -Force | Out-Null
   }
   $absoluteOutputPath = Join-Path $PSScriptRoot $OutputFile
-  [System.IO.File]::WriteAllLines($absoluteOutputPath, $yaml)
+  $utf8NoBom = New-Object System.Text.UTF8Encoding $false
+  [System.IO.File]::WriteAllLines($absoluteOutputPath, $yaml, $utf8NoBom)
 }
 
 <#
@@ -209,14 +225,14 @@ function Convert-EnvToAnsibleGroupVars {
     Ansible playbook 実行（WSL内）
 .DESCRIPTION
     ホストに配置したプロジェクトディレクトリの Ansible playbook を WSL 内で実行する。
-    Ansible playbook として infra/provision/ansible/site.yml を使用する。
+    Ansible playbook として /mnt/c/.../プロジェクトディレクトリ/infra/provision/ansible/site.yml を使用する。
     Ansible playbook では以下の処理を実行する：
     1. common role を使用して、開発環境構築に必要なパッケージやツールをインストールする。
     2. user role を使用して、開発ユーザー作成や sudoers 設定を行う。
     3. wsl role を使用して、WSL の設定を行う。
     4. git role を使用して、WSL 内での Git 設定と Git リポジトリクローンを行う。
 #>
-function Run-Ansible {
+function Invoke-Ansible {
   Write-Log "Ansible playbook 実行..."
   $wslPath = Convert-ToWslPath $PWD.Path
   $setupScript = @"
@@ -236,7 +252,7 @@ ansible-playbook -i inventory site.yml
     WSL インスタンスを停止する。
     設定変更後にインスタンスの状態をリセットするために使用する。
 #>
-function Stop-WSL {
+function Stop-WSLInstance {
   Write-Log " WSL インスタンス停止... ( ${env:WSL_INSTANCE_NAME} )"
   wsl --terminate $env:WSL_INSTANCE_NAME
   if ($LASTEXITCODE -ne 0) {
@@ -261,13 +277,13 @@ try {
   Write-Log "セットアップ開始..."
 
   Set-Location $PSScriptRoot
-  Test-SystemRequirements
   Read-Env
-  Ensure-WSL
+  Test-SystemRequirements
+  Import-WSLInstance
   Convert-EnvToAnsibleGroupVars
-  Ensure-Ansible
-  Run-Ansible
-  Stop-WSL
+  Install-Ansible
+  Invoke-Ansible
+  Stop-WSLInstance
   Start-VSCode
 
   Write-Log "セットアップ完了"
