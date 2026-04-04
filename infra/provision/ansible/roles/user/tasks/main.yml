@@ -1,5 +1,6 @@
+---
 - name: ユーザー作成
-  user:
+  ansible.builtin.user:
     name: "{{ wsl_user_name }}"
     password: "{{ wsl_user_password | password_hash('sha512') }}"
     shell: /bin/bash
@@ -7,7 +8,7 @@
     append: yes
 
 - name: sudoers設定
-  copy:
+  ansible.builtin.copy:
     dest: "/etc/sudoers.d/{{ wsl_user_name }}"
     content: "{{ wsl_user_name }} ALL=(ALL) ALL"
     mode: "0440"

@@ -1,5 +1,6 @@
+---
 - name: wsl.conf設定
-  copy:
+  ansible.builtin.copy:
     dest: /etc/wsl.conf
     content: |
       [user]

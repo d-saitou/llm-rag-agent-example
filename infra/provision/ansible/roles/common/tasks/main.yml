@@ -1,10 +1,11 @@
+---
 - name: aptキャッシュ更新
-  apt:
+  ansible.builtin.apt:
     update_cache: yes
     cache_valid_time: 3600
 
 - name: 基本パッケージインストール
-  apt:
+  ansible.builtin.apt:
     name:
       - git
       - curl
