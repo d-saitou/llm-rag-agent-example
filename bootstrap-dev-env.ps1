@@ -163,6 +163,10 @@ function Import-WSLInstance {
   if ($LASTEXITCODE -ne 0) {
     throw "WSL インスタンス作成失敗"
   }
+  wsl --set-default $env:WSL_INSTANCE_NAME
+  if ($LASTEXITCODE -ne 0) {
+    throw "WSL インスタンス規定設定失敗"
+  }
 }
 
 <#
