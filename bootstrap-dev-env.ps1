@@ -135,8 +135,7 @@ function Read-Env {
     $key = $key.Trim()
     $value = $value.Trim().Trim("'").Trim('"')
     if ($key) {
-      $ExecutionContext.SessionState.Path.SetLocation($PSScriptRoot)
-      Set-Content "env:$key" $value
+      [System.Environment]::SetEnvironmentVariable($key, $value)
     }
   }
 }
