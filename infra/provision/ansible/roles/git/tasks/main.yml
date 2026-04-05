@@ -14,4 +14,4 @@
   ansible.builtin.git:
     repo: "{{ git_repo_url }}"
     dest: "/home/{{ wsl_user_name }}/{{ git_repo_name }}"
-    version: HEAD
+    version: "{{ git_repo_branch }}"
