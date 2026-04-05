@@ -1,15 +1,17 @@
 ﻿<#
 .SYNOPSIS
-    LLM・RAG エージェント開発環境自動構築スクリプト
+    LLM・RAG エージェント開発環境 初期構築スクリプト
 .DESCRIPTION
-    以下の開発環境構築を実行する：
+    以下の開発環境構築処理を実行する：
     1. システム要件チェック（WSL, Docker Desktop, VS Code, VS Code Remote Development）
     2. WSL インスタンス構築
-    3. Ansible インストール・playbook 実行
+    3. WSL インスタンスプロビジョニング実行 (./infra/provision/provision.sh)
     4. VS Code リモートセッション起動
 .NOTES
-    - 実行前に .env ファイルを作成し、パスやユーザー情報を環境に合わせて変更すること。
+    - 実行前に プロジェクトルート/.env ファイルを作成し、ユーザー情報等を環境に合わせて変更すること。
 #>
+
+$ScriptName = $MyInvocation.MyCommand.Name
 
 <#
 .SYNOPSIS
@@ -27,7 +29,7 @@ function Write-Log {
     [string]$Level = "INFO"
   )
   $ts = Get-Date -Format "yyyy-MM-dd HH:mm:ss"
-  Write-Host "[$ts][$Level] $Message"
+  Write-Host "[$ts][$Level][$ScriptName] $Message"
 }
 
 <#
@@ -171,81 +173,15 @@ function Import-WSLInstance {
 
 <#
 .SYNOPSIS
-    Ansible インストール（WSL 内）
-.DESCRIPTION
-    WSL 内で Ansible がインストールされていない場合、Ansible をインストールする。
+    WSL インスタンスプロビジョニング実行 (./infra/provision/provision.sh)
 #>
-function Install-Ansible {
-  Write-Log "Ansibleインストール..."
-  $setupScript = @"
-if command -v ansible >/dev/null 2>&1; then
-  exit
-fi
-export DEBIAN_FRONTEND=noninteractive &&
-apt-get update &&
-apt-get install -y ansible
-"@
-  $setupScript | wsl -d $env:WSL_INSTANCE_NAME -u root --exec bash -c "tr -d '\r' | bash"
-  if ($LASTEXITCODE -ne 0) {
-      throw "Ansibleインストール失敗"
-  }
-}
-
-<#
-.SYNOPSIS
-    .env → group_vars(Ansible) 変換
-.DESCRIPTION
-    .env ファイルの内容を Ansible の group_vars 形式に変換する。
-#>
-function Convert-EnvToAnsibleGroupVars {
-  param(
-    [string]$EnvFile = ".env",
-    [string]$OutputFile = "infra/provision/ansible/group_vars/all.yml"
-  )
-  Write-Log ".env → Ansible group_vars 変換..."
-  $lines = Get-Content $EnvFile
-  $yaml = @()
-  foreach ($line in $lines) {
-    if ($line -match "^\s*#") { continue }
-    if ($line -match "^\s*$") { continue }
-    if ($line -notmatch "=") { continue }
-    $key, $value = $line -split "=", 2
-    $key = $key.Trim().ToLower()
-    $value = $value.Trim().Trim("'").Trim('"') -replace '\\', '\\' -replace '"', '\"'
-    $yaml += "${key}: `"${value}`""
-  }
-  $dir = Split-Path $OutputFile
-  if (!(Test-Path $dir)) {
-    New-Item -ItemType Directory -Path $dir -Force | Out-Null
-  }
-  $absoluteOutputPath = Join-Path $PSScriptRoot $OutputFile
-  $utf8NoBom = New-Object System.Text.UTF8Encoding $false
-  [System.IO.File]::WriteAllLines($absoluteOutputPath, $yaml, $utf8NoBom)
-}
-
-<#
-.SYNOPSIS
-    Ansible playbook 実行（WSL内）
-.DESCRIPTION
-    ホストに配置したプロジェクトディレクトリの Ansible playbook を WSL 内で実行する。
-    Ansible playbook として /mnt/c/.../プロジェクトディレクトリ/infra/provision/ansible/site.yml を使用する。
-    Ansible playbook では以下の処理を実行する：
-    1. common role を使用して、開発環境構築に必要なパッケージやツールをインストールする。
-    2. user role を使用して、開発ユーザー作成や sudoers 設定を行う。
-    3. wsl role を使用して、WSL の設定を行う。
-    4. git role を使用して、WSL 内での Git 設定と Git リポジトリクローンを行う。
-#>
-function Invoke-Ansible {
-  Write-Log "Ansible playbook 実行..."
-  $wslPath = Convert-ToWslPath $PWD.Path
-  $setupScript = @"
-cd "$wslPath/infra/provision/ansible" &&
-ansible-playbook -i inventory site.yml
-"@
-  $setupScript | wsl -d $env:WSL_INSTANCE_NAME -u root --exec bash -c "tr -d '\r' | bash"
-  if ($LASTEXITCODE -ne 0) {
-      throw "Ansible playbook 実行失敗"
-  }
+function Invoke-ProvisionScript {
+    Write-Log "WSL インスタンスプロビジョニング実行..."
+    $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "infra/provision/provision.sh")
+    wsl -d $env:WSL_INSTANCE_NAME -u root -- bash "$scriptWslPath"
+    if ($LASTEXITCODE -ne 0) {
+        throw "WSL インスタンスプロビジョニング実行失敗"
+    }
 }
 
 <#
@@ -283,9 +219,7 @@ try {
   Read-Env
   Test-SystemRequirements
   Import-WSLInstance
-  Convert-EnvToAnsibleGroupVars
-  Install-Ansible
-  Invoke-Ansible
+  Invoke-ProvisionScript
   Stop-WSLInstance
   Start-VSCode
 
