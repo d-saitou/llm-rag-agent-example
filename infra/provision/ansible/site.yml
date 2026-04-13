@@ -9,6 +9,7 @@
 
 - name: 開発環境セットアップ
   hosts: localhost
+  become: yes
   become_user: "{{ wsl_user_name }}"
   roles:
     - git
