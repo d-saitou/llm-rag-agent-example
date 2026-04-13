@@ -10,7 +10,7 @@
 .NOTES
     - 実行前に プロジェクトルート/.env ファイルを作成し、ユーザー情報等を環境に合わせて変更すること。
 #>
-
+$ErrorActionPreference = "Stop"
 $ScriptName = $MyInvocation.MyCommand.Name
 
 <#
@@ -43,20 +43,20 @@ function Write-Log {
     指定URLからファイルをダウンロードし、指定パスに保存する。既にファイルが存在する場合はダウンロードをスキップする。
 #>
 function Get-File {
-    param([string]$Url, [string]$Path)
-    if (!(Test-Path $Path)) {
-        Write-Log "ファイルダウンロード開始... (${Url})"
-        try {
-            # Import-Module BitsTransfer
-            # Start-BitsTransfer -Source $Url -Destination $Path -Priority Foreground -RetryTimeout 60 -RetryInterval 60 -ErrorAction Stop
-            Invoke-WebRequest -Uri $Url -OutFile $Path
-        } catch {
-            if (Test-Path $Path) {
-                Remove-Item $Path -Force
-            }
-            throw "ダウンロード失敗: $($_.Exception.Message)"
-        }
+  param([string]$Url, [string]$Path)
+  if (!(Test-Path $Path)) {
+    Write-Log "ファイルダウンロード開始... (${Url})"
+    try {
+      # Import-Module BitsTransfer
+      # Start-BitsTransfer -Source $Url -Destination $Path -Priority Foreground -RetryTimeout 60 -RetryInterval 60 -ErrorAction Stop
+      Invoke-WebRequest -Uri $Url -OutFile $Path
+    } catch {
+      if (Test-Path $Path) {
+        Remove-Item $Path -Force
+      }
+      throw "ダウンロード失敗: $($_.Exception.Message)"
     }
+  }
 }
 
 <#
@@ -176,12 +176,12 @@ function Import-WSLInstance {
     WSL インスタンスプロビジョニング実行 (./infra/provision/provision.sh)
 #>
 function Invoke-ProvisionScript {
-    Write-Log "WSL インスタンスプロビジョニング実行..."
-    $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "infra/provision/provision.sh")
-    wsl -d $env:WSL_INSTANCE_NAME -u root -- bash "$scriptWslPath"
-    if ($LASTEXITCODE -ne 0) {
-        throw "WSL インスタンスプロビジョニング実行失敗"
-    }
+  Write-Log "WSL インスタンスプロビジョニング実行..."
+  $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "infra/provision/provision.sh")
+  wsl -d $env:WSL_INSTANCE_NAME -u root -- bash "$scriptWslPath"
+  if ($LASTEXITCODE -ne 0) {
+    throw "WSL インスタンスプロビジョニング実行失敗"
+  }
 }
 
 <#

@@ -1,6 +1,5 @@
 ---
 - name: Git設定
-  become_user: "{{ wsl_user_name }}"
   ansible.builtin.git_config:
     name: "{{ item.name }}"
     value: "{{ item.value }}"
@@ -10,7 +9,6 @@
     - { name: "user.email", value: "{{ git_user_email }}" }
 
 - name: Gitリポジトリクローン
-  become_user: "{{ wsl_user_name }}"
   ansible.builtin.git:
     repo: "{{ git_repo_url }}"
     dest: "/home/{{ wsl_user_name }}/{{ git_repo_name }}"

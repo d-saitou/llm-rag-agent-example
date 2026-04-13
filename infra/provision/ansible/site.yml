@@ -1,9 +1,14 @@
 ---
-- hosts: localhost
+- name: WSL インスタンスセットアップ
+  hosts: localhost
   become: yes
-
   roles:
     - common
     - user
     - wsl
+
+- name: 開発環境セットアップ
+  hosts: localhost
+  become_user: "{{ wsl_user_name }}"
+  roles:
     - git
