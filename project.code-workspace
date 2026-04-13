@@ -22,13 +22,26 @@
     "files.eol": "\n",
     "files.insertFinalNewline": true,
     "files.trimTrailingWhitespace": true,
+    "files.associations": {
+      "*.secret": "plaintext",
+      "*.key": "plaintext"
+    },
     "[powershell]": {
       "files.encoding": "utf8bom"
-    }
+    },
+    "[plaintext]": {
+      "files.insertFinalNewline": false, // secrets用に行末の改行なしを許容
+			"editor.quickSuggestions": {
+        "comments": "off",
+        "strings": "off",
+        "other": "off"
+      }
+		}
   },
   "extensions": {
     "recommendations": [
-      "ms-vscode-remote.vscode-remote-extensionpack" // Remote Development
+      "ms-vscode-remote.vscode-remote-extensionpack", // Remote Development
+      "ms-azuretools.vscode-docker"                   // Docker
     ]
   }
 }

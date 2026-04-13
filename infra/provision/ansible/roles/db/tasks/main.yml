@@ -1,0 +1,22 @@
+---
+- name: DBパスワードファイル用ディレクトリ作成
+  ansible.builtin.file:
+    path: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/infra/db/secrets"
+    state: directory
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+    mode: '0755'
+
+- name: DBパスワードファイル作成 (Docker secrets 用)
+  ansible.builtin.copy:
+    dest: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/{{ item.path }}"
+    content: "{{- item.value -}}" # Jinja2の {{- ... -}} を使用して前後の空白・改行除去
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+    mode: '0644'
+  loop:
+    - { path: "infra/db/secrets/postgres_user.secret", value: "{{ db_postgres_user_password }}" }
+    - { path: "infra/db/secrets/app_tx_user.secret", value: "{{ db_app_tx_user_password }}" }
+    - { path: "infra/db/secrets/app_rag_user.secret", value: "{{ db_app_rag_user_password }}" }
+    - { path: "infra/db/secrets/redmine_user.secret", value: "{{ db_redmine_user_password }}" }
+  no_log: true # コンソールパスワード表示防止

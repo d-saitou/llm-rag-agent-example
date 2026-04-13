@@ -13,3 +13,4 @@
   become_user: "{{ wsl_user_name }}"
   roles:
     - git
+    - db
