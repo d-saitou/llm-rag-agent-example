@@ -1,0 +1,38 @@
+services:
+
+  # --- DB (PostgreSQL + pgvector) ---
+  db:
+    build:
+      context: .
+      dockerfile: infra/db/Dockerfile
+    container_name: postgres
+    hostname: db
+    # restart: always
+    environment:
+      POSTGRES_DB: postgres
+      POSTGRES_USER: postgres
+      POSTGRES_PASSWORD_FILE: /run/secrets/db_postgres_user
+      PGDATA: /var/lib/postgresql/data/pgdata
+    secrets:
+      - db_postgres_user
+      - db_app_tx_user
+      - db_app_rag_user
+      - db_redmine_user
+    volumes:
+      #- ./infra/db/initdb.d:/docker-entrypoint-initdb.d # 実行権限付与のためファイルコピー
+      - db_data:/var/lib/postgresql/data
+    ports:
+      - "5432:5432"
+
+volumes:
+  db_data:
+
+secrets:
+  db_postgres_user:
+    file: ./infra/db/secrets/postgres_user.secret
+  db_app_tx_user:
+    file: ./infra/db/secrets/app_tx_user.secret
+  db_app_rag_user:
+    file: ./infra/db/secrets/app_rag_user.secret
+  db_redmine_user:
+    file: ./infra/db/secrets/redmine_user.secret
