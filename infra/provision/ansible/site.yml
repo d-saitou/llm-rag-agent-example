@@ -12,5 +12,7 @@
   become: yes
   become_user: "{{ wsl_user_name }}"
   roles:
+    - prepare
     - git
+    - docker
     - db

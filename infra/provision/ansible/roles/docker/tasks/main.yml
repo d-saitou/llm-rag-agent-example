@@ -1,0 +1,26 @@
+---
+- name: カスタム Docker 設定ディレクトリ作成 ※docker-credential-desktop.exe 起動エラー対応
+  ansible.builtin.file:
+    path: "/home/{{ wsl_user_name }}/.docker.custom"
+    state: directory
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+    mode: '0755'
+
+- name: カスタム Docker 設定ファイル作成 ※docker-credential-desktop.exe 起動エラー対応
+  ansible.builtin.copy:
+    content: "{}"
+    dest: "/home/{{ wsl_user_name }}/.docker.custom/config.json"
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+    mode: '0644'
+
+- name: .bashrc 更新 (DOCKER_CONFIG 設定追加)
+  ansible.builtin.lineinfile:
+    path: "/home/{{ wsl_user_name }}/.bashrc"
+    line: 'export DOCKER_CONFIG="$HOME/.docker.custom"'
+    state: present
+    create: yes
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+    mode: '0644'

@@ -1,0 +1,8 @@
+---
+- name: Ansible 用一時ディレクトリ作成 (警告対策)
+  ansible.builtin.file:
+    path: "/home/{{ wsl_user_name }}/.ansible/tmp"
+    state: directory
+    mode: '0755'
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
