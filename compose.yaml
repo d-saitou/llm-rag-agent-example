@@ -5,6 +5,8 @@ services:
     build:
       context: .
       dockerfile: infra/db/Dockerfile
+      args:
+        DB_PGVECTOR_VERSION: "${DB_PGVECTOR_VERSION}"
     container_name: postgres
     hostname: db
     # restart: always

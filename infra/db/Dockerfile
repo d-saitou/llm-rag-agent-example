@@ -1,4 +1,8 @@
-FROM pgvector/pgvector:0.8.2-pg17-trixie
+# 変数定義(デフォルト値) ※参照：https://hub.docker.com/r/pgvector/pgvector/tags
+ARG DB_PGVECTOR_VERSION=0.8.2-pg17-trixie
+
+# イメージ指定
+FROM pgvector/pgvector:${DB_PGVECTOR_VERSION}
 
 # ロケールインストール
 RUN apt-get update && \
