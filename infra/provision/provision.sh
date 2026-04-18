@@ -21,7 +21,6 @@ SCRIPT_DIR=$(cd "$(dirname "$0")"; pwd)
 ANSIBLE_DIR="${SCRIPT_DIR}/ansible"
 ENV_PATH="${SCRIPT_DIR}/../../.env"
 ANSIBLE_GROUP_VARS_PATH="${ANSIBLE_DIR}/group_vars/all.yml"
-YQ_DOWNLOAD_URL="https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"
 
 # Description:
 #   ログメッセージコンソール出力 (例: [2026-04-01 12:00:00][INFO] メッセージ)
@@ -83,6 +82,8 @@ install_ansible() {
 install_yq() {
   if ! command -v yq >/dev/null 2>&1; then
     output_log "INFO" "yq インストール..."
+    local YQ_DOWNLOAD_URL=$(grep "^YQ_DOWNLOAD_URL=" "${ENV_PATH}" | cut -d'=' -f2- | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+    YQ_DOWNLOAD_URL=${YQ_DOWNLOAD_URL:-"https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"}
     wget -q "${YQ_DOWNLOAD_URL}" -O /usr/bin/yq
     chmod +x /usr/bin/yq
   fi
