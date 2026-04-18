@@ -123,7 +123,7 @@ function Test-SystemRequirements {
     指定された .env ファイルから環境変数を読み込み、PowerShell の環境変数として設定する。
 #>
 function Read-Env {
-  param($Path = ".env")
+  param($Path = "..\.env")
   Write-Log ".env 環境変数読み込み..."
   if (!(Test-Path $Path)) {
     throw ".env が見つかりません"
@@ -173,11 +173,11 @@ function Import-WSLInstance {
 
 <#
 .SYNOPSIS
-    WSL インスタンスプロビジョニング実行 (./infra/provision/provision.sh)
+    WSL インスタンスプロビジョニング実行 (./provision/provision.sh)
 #>
 function Invoke-ProvisionScript {
   Write-Log "WSL インスタンスプロビジョニング実行..."
-  $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "infra/provision/provision.sh")
+  $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "provision/provision-wsl.sh")
   wsl -d $env:WSL_INSTANCE_NAME -u root -- bash "$scriptWslPath"
   if ($LASTEXITCODE -ne 0) {
     throw "WSL インスタンスプロビジョニング実行失敗"
@@ -192,7 +192,7 @@ function Invoke-ProvisionScript {
     設定変更後にインスタンスの状態をリセットするために使用する。
 #>
 function Stop-WSLInstance {
-  Write-Log " WSL インスタンス停止... ( ${env:WSL_INSTANCE_NAME} )"
+  Write-Log "WSL インスタンス停止... ( ${env:WSL_INSTANCE_NAME} )"
   wsl --terminate $env:WSL_INSTANCE_NAME
   if ($LASTEXITCODE -ne 0) {
     Write-Log " WSL インスタンス停止失敗。処理続行..." "WARN"

@@ -3,16 +3,16 @@
   hosts: localhost
   become: yes
   roles:
-    - common
-    - user
-    - wsl
+    - wsl_tools
+    - wsl_user
+    - wsl_config
 
 - name: 開発環境セットアップ
   hosts: localhost
   become: yes
   become_user: "{{ wsl_user_name }}"
   roles:
-    - prepare
-    - git
-    - docker
-    - db
+    - prepare_common
+    - prepare_git
+    - prepare_docker
+    - prepare_container_db
