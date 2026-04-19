@@ -12,8 +12,8 @@
   become: yes
   become_user: "{{ wsl_user_name }}"
   roles:
-    - prepare_common
     - prepare_git
+    - prepare_common
     - prepare_docker
     - prepare_container_db
     - prepare_container_redmine

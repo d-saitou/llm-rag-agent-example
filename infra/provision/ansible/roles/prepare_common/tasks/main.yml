@@ -6,3 +6,19 @@
     mode: '0755'
     owner: "{{ wsl_user_name }}"
     group: "{{ wsl_user_name }}"
+
+- name: クローンリポジトリ内シェルスクリプト検索
+  ansible.builtin.find:
+    paths: "/home/{{ wsl_user_name }}/{{ git_repo_name }}"
+    patterns: "*.sh"
+    recurse: yes
+  register: sh_files
+
+- name: クローンリポジトリ内シェルスクリプト実行権限設定 ※Windowsホスト側からコミット時の実行権限消失対応
+  ansible.builtin.file:
+    path: "{{ item.path }}"
+    mode: '0755'
+  loop: "{{ sh_files.files }}"
+  when: sh_files.matched > 0
+  loop_control:
+    label: "{{ item.path }}"

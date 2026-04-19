@@ -13,7 +13,7 @@
     content: "{{- item.value -}}" # Jinja2の {{- ... -}} を使用して前後の空白・改行除去
     owner: "{{ wsl_user_name }}"
     group: "{{ wsl_user_name }}"
-    mode: '0600'
+    mode: '0644'
   loop:
     - { path: "postgres_user.secret", value: "{{ db_postgres_user_password }}" }
     - { path: "app_tx_user.secret", value: "{{ db_app_tx_user_password }}" }
