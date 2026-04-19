@@ -10,4 +10,5 @@
       - git
       - curl
       - build-essential
+      - openssl
     state: present

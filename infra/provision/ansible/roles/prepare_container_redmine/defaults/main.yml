@@ -1,0 +1,6 @@
+---
+# Redmine コンテナ用 secrets ディレクトリパス
+redmine_secrets_dir: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/infra/redmine/secrets"
+
+# Redmine API キーファイルパス
+redmine_api_key_file: "{{ redmine_secrets_dir }}/redmine_api.key"

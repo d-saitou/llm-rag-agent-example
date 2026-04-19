@@ -16,3 +16,4 @@
     - prepare_git
     - prepare_docker
     - prepare_container_db
+    - prepare_container_redmine

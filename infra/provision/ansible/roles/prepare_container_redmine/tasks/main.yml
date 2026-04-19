@@ -1,0 +1,20 @@
+---
+- name: Redmine コンテナ用 secrets ディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ redmine_secrets_dir }}"
+    state: directory
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+    mode: '0755'
+
+- name: Redmine API キーファイル生成 (ファイルが存在しない場合のみ)
+  ansible.builtin.shell:
+    cmd: "openssl rand -hex 20 > {{ redmine_api_key_file }}"
+    creates: "{{ redmine_api_key_file }}"
+
+- name: Redmine API キーファイル権限設定
+  ansible.builtin.file:
+    path: "{{ redmine_api_key_file }}"
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+    mode: '0600'
