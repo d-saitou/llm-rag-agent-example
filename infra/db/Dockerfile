@@ -14,6 +14,6 @@ RUN apt-get update && \
 ENV LANG ja_JP.UTF-8
 ENV LC_ALL ja_JP.UTF-8
 
-# 初期化スクリプトコピー・実行権限付与
-COPY ./infra/db/initdb.d/* /docker-entrypoint-initdb.d/
-RUN chmod +x /docker-entrypoint-initdb.d/*.sh
+# 初期化スクリプトコピー・実行権限付与 ※スクリプト実行権限は リポジトリにコミットするためここでは付与しない
+# COPY ./infra/db/initdb.d/* /docker-entrypoint-initdb.d/
+# RUN chmod +x /docker-entrypoint-initdb.d/*.sh

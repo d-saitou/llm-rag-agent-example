@@ -28,7 +28,7 @@ services:
       - db_app_rag_user
       - db_redmine_user
     volumes:
-      #- ./infra/db/initdb.d:/docker-entrypoint-initdb.d # 実行権限付与のため Dockerfile でファイルコピー
+      - ./infra/db/initdb.d:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
 
 secrets:
