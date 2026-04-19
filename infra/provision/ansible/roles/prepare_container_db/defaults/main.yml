@@ -1,0 +1,3 @@
+---
+# DB コンテナ用 secrets ディレクトリパス
+db_secrets_dir: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/infra/db/secrets"

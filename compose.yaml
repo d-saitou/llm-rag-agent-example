@@ -2,14 +2,21 @@ services:
 
   # --- DB (PostgreSQL + pgvector) ---
   db:
+    container_name: postgres
+    hostname: db
     build:
       context: .
       dockerfile: infra/db/Dockerfile
       args:
         DB_PGVECTOR_VERSION: "${DB_PGVECTOR_VERSION}"
-    container_name: postgres
-    hostname: db
     # restart: always
+    healthcheck:
+      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "5432:5432"
     environment:
       POSTGRES_DB: postgres
       POSTGRES_USER: postgres
@@ -21,13 +28,8 @@ services:
       - db_app_rag_user
       - db_redmine_user
     volumes:
-      #- ./infra/db/initdb.d:/docker-entrypoint-initdb.d # 実行権限付与のためファイルコピー
+      #- ./infra/db/initdb.d:/docker-entrypoint-initdb.d # 実行権限付与のため Dockerfile でファイルコピー
       - db_data:/var/lib/postgresql/data
-    ports:
-      - "5432:5432"
-
-volumes:
-  db_data:
 
 secrets:
   db_postgres_user:
@@ -38,3 +40,6 @@ secrets:
     file: ./infra/db/secrets/app_rag_user.secret
   db_redmine_user:
     file: ./infra/db/secrets/redmine_user.secret
+
+volumes:
+  db_data:
