@@ -7,6 +7,15 @@
     owner: "{{ wsl_user_name }}"
     group: "{{ wsl_user_name }}"
 
+- name: .env ファイルコピー (ホスト側クローンリポジトリ → WSLインスタンス内クローンリポジトリ)
+  ansible.builtin.copy:
+    src: "{{ playbook_dir }}/../../../.env"
+    dest: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/.env"
+    force: no
+    mode: '0644'
+    owner: "{{ wsl_user_name }}"
+    group: "{{ wsl_user_name }}"
+
 - name: クローンリポジトリ内シェルスクリプト検索
   ansible.builtin.find:
     paths: "/home/{{ wsl_user_name }}/{{ git_repo_name }}"
