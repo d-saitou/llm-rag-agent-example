@@ -31,6 +31,31 @@ services:
       - ./infra/db/initdb.d:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
 
+  # --- Redmine ---
+  redmine:
+    container_name: redmine
+    hostname: redmine
+    build:
+      context: .
+      dockerfile: infra/redmine/Dockerfile
+      args:
+        REDMINE_VERSION: "${REDMINE_VERSION}"
+    # restart: always
+    depends_on:
+      db:
+        condition: service_healthy
+    ports:
+      - "8080:3000"
+    environment:
+      REDMINE_DB_POSTGRES: db
+      REDMINE_DB_DATABASE: redmine_db
+      REDMINE_DB_USERNAME: redmine
+      REDMINE_DB_PASSWORD_FILE: /run/secrets/db_redmine_user
+    secrets:
+      - db_redmine_user
+    volumes:
+      - redmine_files:/usr/src/redmine/files
+
 secrets:
   db_postgres_user:
     file: ./infra/db/secrets/postgres_user.secret
@@ -43,3 +68,4 @@ secrets:
 
 volumes:
   db_data:
+  redmine_files:
