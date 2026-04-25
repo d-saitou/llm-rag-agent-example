@@ -9,7 +9,7 @@
 #   4. .env → Ansible group_vars 変換
 #   5. Ansible Playbook (site.yml) 実行
 # Usage:
-#   ./provision.sh
+#   ./provision-wsl.sh
 # Note:
 #   - 実行前に プロジェクトルート/.env ファイルを作成し、ユーザー情報等を環境に合わせて変更すること。
 #   - root 権限で実行すること。
@@ -29,14 +29,14 @@ ANSIBLE_GROUP_VARS_PATH="${ANSIBLE_DIR}/group_vars/all.yml"
 #   $2 - メッセージ
 # Returns: なし
 output_log() {
-  local LVL="$1"
-  local MSG="$2"
-  local TS="$(date "+%Y/%m/%d %H:%M:%S")"
-  local LOG_MSG="[${TS}][${LVL}][${SCRIPT_NAME}] ${MSG}"
-  if [ "${LVL}" = "ERROR" ]; then
-    echo "${LOG_MSG}" >&2
+  local level="$1"
+  local message="$2"
+  local timestamp="$(date "+%Y/%m/%d %H:%M:%S")"
+  local log_msg="[${timestamp}][${level}][${SCRIPT_NAME}] ${message}"
+  if [ "${level}" = "ERROR" ]; then
+    echo "${log_msg}" >&2
   else
-    echo "${LOG_MSG}"
+    echo "${log_msg}"
   fi
 }
 
@@ -82,9 +82,9 @@ install_ansible() {
 install_yq() {
   if ! command -v yq >/dev/null 2>&1; then
     output_log "INFO" "yq インストール..."
-    local YQ_DOWNLOAD_URL=$(grep "^YQ_DOWNLOAD_URL=" "${ENV_PATH}" | cut -d'=' -f2- | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
-    YQ_DOWNLOAD_URL=${YQ_DOWNLOAD_URL:-"https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"}
-    wget -q "${YQ_DOWNLOAD_URL}" -O /usr/bin/yq
+    local yq_download_url=$(grep "^YQ_DOWNLOAD_URL=" "${ENV_PATH}" | cut -d'=' -f2- | sed -e 's/^"//' -e 's/"$//' -e "s/^'//" -e "s/'$//")
+    yq_download_url=${yq_download_url:-"https://github.com/mikefarah/yq/releases/latest/download/yq_linux_amd64"}
+    wget -q "${yq_download_url}" -O /usr/bin/yq
     chmod +x /usr/bin/yq
   fi
 }
@@ -99,8 +99,8 @@ convert_env_to_ansible() {
   mkdir -p "$(dirname "${ANSIBLE_GROUP_VARS_PATH}")"
   sed 's/\\/\\\\/g' "${ENV_PATH}" | yq eval-all -p=props -oy 'with_entries(.key |= downcase)' - > "${ANSIBLE_GROUP_VARS_PATH}"
 
-  local ANSIBLE_DIR_OWNER_GROUP="$(stat -c '%U:%G' "${ANSIBLE_DIR}")"
-  chown "${ANSIBLE_DIR_OWNER_GROUP}" "${ANSIBLE_GROUP_VARS_PATH}"
+  local ansible_dir_owner_group="$(stat -c '%U:%G' "${ANSIBLE_DIR}")"
+  chown "${ansible_dir_owner_group}" "${ANSIBLE_GROUP_VARS_PATH}"
 }
 
 # Description: Ansible Playbook (site.yml) 実行

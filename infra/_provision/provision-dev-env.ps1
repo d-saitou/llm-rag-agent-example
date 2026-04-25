@@ -5,7 +5,7 @@
     以下の開発環境構築処理を実行する：
     1. システム要件チェック（WSL, Docker Desktop, VS Code, VS Code Remote Development）
     2. WSL インスタンス構築
-    3. WSL インスタンスプロビジョニング実行 (./infra/provision/provision.sh)
+    3. WSL インスタンスプロビジョニング実行 (./provision-wsl.sh)
     4. VS Code リモートセッション起動
 .NOTES
     - 実行前に プロジェクトルート/.env ファイルを作成し、ユーザー情報等を環境に合わせて変更すること。
@@ -123,7 +123,7 @@ function Test-SystemRequirements {
     指定された .env ファイルから環境変数を読み込み、PowerShell の環境変数として設定する。
 #>
 function Read-Env {
-  param($Path = "..\.env")
+  param($Path = "..\..\.env")
   Write-Log ".env 環境変数読み込み..."
   if (!(Test-Path $Path)) {
     throw ".env が見つかりません"
@@ -173,11 +173,11 @@ function Import-WSLInstance {
 
 <#
 .SYNOPSIS
-    WSL インスタンスプロビジョニング実行 (./provision/provision.sh)
+    WSL インスタンスプロビジョニング実行 (./provision-wsl.sh)
 #>
 function Invoke-ProvisionScript {
   Write-Log "WSL インスタンスプロビジョニング実行..."
-  $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "provision/provision-wsl.sh")
+  $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "provision-wsl.sh")
   wsl -d $env:WSL_INSTANCE_NAME -u root -- bash "$scriptWslPath"
   if ($LASTEXITCODE -ne 0) {
     throw "WSL インスタンスプロビジョニング実行失敗"
