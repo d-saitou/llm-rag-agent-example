@@ -18,3 +18,11 @@
     owner: "{{ wsl_uid }}"
     group: "{{ wsl_gid }}"
     mode: '0600' # wsl_uid を指定してコンテナを起動するため 0600 に設定
+
+- name: Redmine コンテナ永続化データ用 files ディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ redmine_files_dir }}"
+    state: directory
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
+    mode: '0700' # wsl_uid を指定してコンテナを起動するため 0700 に設定

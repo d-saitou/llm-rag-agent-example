@@ -29,8 +29,9 @@ services:
       - db_app_rag_user
       - db_redmine_user
     volumes:
-      - ./infra/db/initdb.d:/docker-entrypoint-initdb.d
       - db_data:/var/lib/postgresql/data
+      - ./infra/db/initdb.d:/docker-entrypoint-initdb.d
+      - ./data/db/backups/postgres:/var/backups/postgres
 
   # --- Redmine ---
   redmine:
@@ -56,7 +57,7 @@ services:
     secrets:
       - db_redmine_user
     volumes:
-      - redmine_files:/usr/src/redmine/files
+      - ./data/redmine/files:/usr/src/redmine/files
 
 secrets:
   db_postgres_user:
@@ -70,4 +71,3 @@ secrets:
 
 volumes:
   db_data:
-  redmine_files:

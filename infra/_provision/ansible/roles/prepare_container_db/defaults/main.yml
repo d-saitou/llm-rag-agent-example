@@ -1,3 +1,6 @@
 ---
 # DB コンテナ用 secrets ディレクトリパス
 db_secrets_dir: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/infra/db/secrets"
+
+# DB コンテナ永続化データ用 backups ディレクトリパス
+db_backups_dir: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/data/db/backups/postgres"

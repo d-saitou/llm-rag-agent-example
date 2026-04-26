@@ -20,3 +20,11 @@
     - { path: "app_rag_user.secret", value: "{{ db_app_rag_user_password }}" }
     - { path: "redmine_user.secret", value: "{{ db_redmine_user_password }}" }
   no_log: true # コンソールパスワード表示防止
+
+- name: DB コンテナ永続化データ用 backups ディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ db_backups_dir }}"
+    state: directory
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
+    mode: '0700' # wsl_uid を指定してコンテナを起動するため 0700 に設定

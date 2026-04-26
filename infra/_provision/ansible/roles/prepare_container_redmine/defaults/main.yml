@@ -4,3 +4,6 @@ redmine_secrets_dir: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/infra/redmin
 
 # Redmine API キーファイルパス
 redmine_api_key_file: "{{ redmine_secrets_dir }}/redmine_api.key"
+
+# Redmine コンテナ永続化データ用 files ディレクトリパス
+redmine_files_dir: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/data/redmine/files"
