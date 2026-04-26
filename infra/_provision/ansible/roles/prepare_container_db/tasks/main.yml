@@ -5,7 +5,7 @@
     state: directory
     owner: "{{ wsl_uid }}"
     group: "{{ wsl_gid }}"
-    mode: '0755'
+    mode: '0700' # wsl_uid を指定してコンテナを起動するため 0700 に設定
 
 - name: DBパスワードファイル作成
   ansible.builtin.copy:
@@ -13,7 +13,7 @@
     content: "{{- item.value -}}" # Jinja2の {{- ... -}} を使用して前後の空白・改行除去
     owner: "{{ wsl_uid }}"
     group: "{{ wsl_gid }}"
-    mode: '0644'
+    mode: '0600' # wsl_uid を指定してコンテナを起動するため 0600 に設定
   loop:
     - { path: "postgres_user.secret", value: "{{ db_postgres_user_password }}" }
     - { path: "app_tx_user.secret", value: "{{ db_app_tx_user_password }}" }

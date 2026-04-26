@@ -5,7 +5,7 @@
     state: directory
     owner: "{{ wsl_uid }}"
     group: "{{ wsl_gid }}"
-    mode: '0755'
+    mode: '0700' # wsl_uid を指定してコンテナを起動するため 0700 に設定
 
 - name: Redmine API キーファイル生成 (ファイルが存在しない場合のみ)
   ansible.builtin.shell:
@@ -17,4 +17,4 @@
     path: "{{ redmine_api_key_file }}"
     owner: "{{ wsl_uid }}"
     group: "{{ wsl_gid }}"
-    mode: '0644'
+    mode: '0600' # wsl_uid を指定してコンテナを起動するため 0600 に設定
