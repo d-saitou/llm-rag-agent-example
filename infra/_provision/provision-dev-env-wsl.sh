@@ -9,7 +9,7 @@
 #   4. .env → Ansible group_vars 変換
 #   5. Ansible Playbook (site.yml) 実行
 # Usage:
-#   ./provision-wsl.sh
+#   ./provision-dev-env-wsl.sh
 # Note:
 #   - 実行前に プロジェクトルート/.env ファイルを作成し、ユーザー情報等を環境に合わせて変更すること。
 #   - root 権限で実行すること。

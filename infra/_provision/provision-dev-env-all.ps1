@@ -5,7 +5,7 @@
     以下の開発環境構築処理を実行する：
     1. システム要件チェック（WSL, Docker Desktop, VS Code, VS Code Remote Development）
     2. WSL インスタンス構築
-    3. WSL インスタンスプロビジョニング実行 (./provision-wsl.sh)
+    3. WSL インスタンスプロビジョニング実行 (./provision-dev-env-wsl.sh)
     4. VS Code リモートセッション起動
 .NOTES
     - 実行前に プロジェクトルート/.env ファイルを作成し、ユーザー情報等を環境に合わせて変更すること。
@@ -173,11 +173,11 @@ function Import-WSLInstance {
 
 <#
 .SYNOPSIS
-    WSL インスタンスプロビジョニング実行 (./provision-wsl.sh)
+    WSL インスタンスプロビジョニング実行 (./provision-dev-env-wsl.sh)
 #>
 function Invoke-ProvisionScript {
   Write-Log "WSL インスタンスプロビジョニング実行..."
-  $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "provision-wsl.sh")
+  $scriptWslPath = Convert-ToWslPath (Join-Path $PSScriptRoot "provision-dev-env-wsl.sh")
   wsl -d $env:WSL_INSTANCE_NAME -u root -- bash "$scriptWslPath"
   if ($LASTEXITCODE -ne 0) {
     throw "WSL インスタンスプロビジョニング実行失敗"
