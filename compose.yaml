@@ -9,6 +9,7 @@ services:
       dockerfile: infra/db/Dockerfile
       args:
         DB_PGVECTOR_VERSION: "${DB_PGVECTOR_VERSION}"
+    user: "${WSL_UID}:${WSL_GID}"
     # restart: always
     healthcheck:
       test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
@@ -40,6 +41,7 @@ services:
       dockerfile: infra/redmine/Dockerfile
       args:
         REDMINE_VERSION: "${REDMINE_VERSION}"
+    user: "${WSL_UID}:${WSL_GID}"
     # restart: always
     depends_on:
       db:

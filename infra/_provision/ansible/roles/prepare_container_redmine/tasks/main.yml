@@ -3,8 +3,8 @@
   ansible.builtin.file:
     path: "{{ redmine_secrets_dir }}"
     state: directory
-    owner: "{{ wsl_user_name }}"
-    group: "{{ wsl_user_name }}"
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
     mode: '0755'
 
 - name: Redmine API キーファイル生成 (ファイルが存在しない場合のみ)
@@ -15,6 +15,6 @@
 - name: Redmine API キーファイル権限設定
   ansible.builtin.file:
     path: "{{ redmine_api_key_file }}"
-    owner: "{{ wsl_user_name }}"
-    group: "{{ wsl_user_name }}"
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
     mode: '0644'

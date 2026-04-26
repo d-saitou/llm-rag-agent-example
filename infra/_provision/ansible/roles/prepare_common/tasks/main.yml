@@ -4,8 +4,8 @@
     path: "/home/{{ wsl_user_name }}/.ansible/tmp"
     state: directory
     mode: '0755'
-    owner: "{{ wsl_user_name }}"
-    group: "{{ wsl_user_name }}"
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
 
 - name: .env ファイルコピー (ホスト側クローンリポジトリ → WSLインスタンス内クローンリポジトリ)
   ansible.builtin.copy:
@@ -13,8 +13,8 @@
     dest: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/.env"
     force: no
     mode: '0644'
-    owner: "{{ wsl_user_name }}"
-    group: "{{ wsl_user_name }}"
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
 
 - name: クローンリポジトリ内シェルスクリプト検索
   ansible.builtin.find:

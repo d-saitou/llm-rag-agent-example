@@ -1,9 +1,18 @@
 ---
-- name: ユーザー作成
+- name: 開発用グループ作成
+  become: yes
+  ansible.builtin.group:
+    name: "{{ wsl_group_name }}"
+    gid: "{{ wsl_gid }}"
+
+- name: 開発用ユーザー作成
   ansible.builtin.user:
     name: "{{ wsl_user_name }}"
+    uid: "{{ wsl_uid }}"
     password: "{{ wsl_user_password | password_hash('sha512') }}"
     shell: /bin/bash
+    create_home: yes
+    group: "{{ wsl_gid }}"
     groups: sudo
     append: yes
 
