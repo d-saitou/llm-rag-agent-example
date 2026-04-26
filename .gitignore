@@ -1,6 +1,13 @@
-sandbox/
+# Python
+**/*.py[cod]
+**/*$py.class
+**/__pycache__/
+**/.venv/
+
+# Other files
 .env
 infra/_provision/ansible/group_vars/all.yml
 infra/db/secrets/
 infra/redmine/secrets/
 data/
+sandbox/
