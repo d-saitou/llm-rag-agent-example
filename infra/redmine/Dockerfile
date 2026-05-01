@@ -6,9 +6,9 @@ FROM redmine:${REDMINE_VERSION}
 
 USER root
 
-# PDF出力用日本語フォント および タイムゾーンデータ インストール
+# ツールインストール ※日本語フォント(PDF出力用)、タイムゾーンデータ、curl
 RUN apk update && \
-    apk add --no-cache font-noto-cjk tzdata
+    apk add --no-cache font-noto-cjk tzdata curl
 
 # タイムゾーン設定
 ENV TZ Asia/Tokyo

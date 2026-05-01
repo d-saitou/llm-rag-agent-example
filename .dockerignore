@@ -1,0 +1,29 @@
+# Git
+.git
+.gitignore
+
+# Python
+*.py[cod]
+*$py.class
+__pycache__/
+.venv/
+.ruff_cache/
+
+# IDE / Editor
+.vscode/
+.devcontainer/
+*.code-workspace
+
+# OS
+.DS_Store
+Thumbs.db
+
+# Project
+.env
+.env.*
+!.env.example
+infra/_provision/
+infra/**/secrets/
+data/
+docs/
+sandbox/

@@ -1,0 +1,56 @@
+{
+  "version": "2.0.0",
+  "tasks": [
+    {
+      // docker compose up
+      "label": "Docker Compose Up",
+      "type": "shell",
+      "command": "docker compose up",
+      "isBackground": true,
+      "problemMatcher": {
+        "owner": "custom",
+        "pattern": [
+          {
+            "regexp": ".",
+            "file": 1,
+            "location": 2,
+            "message": 3
+          }
+        ],
+        "background": {
+          "activeOnStart": true,
+          "beginsPattern": ".*",
+          "endsPattern": ".*Application startup complete.*"
+        }
+      },
+      "group": {
+        "kind": "build",
+        "isDefault": false
+      }
+    },
+    {
+      // docker compose down
+      "label": "Docker Compose Down",
+      "type": "shell",
+      "command": "docker compose down",
+      "problemMatcher": []
+    },
+    {
+      // VS Code DevContainer 自動生成イメージクリーンアップタスク
+      // - DevContainer によるコンテナ起動時に自動生成される Docker イメージを削除
+      // - ワークスペースを開いた際に実行されるように設定
+      "label": "VS Code DevContainer Images Cleanup",
+      "type": "shell",
+      "command": "docker images --filter 'reference=vsc-*' -q | xargs -r docker rmi",
+      "problemMatcher": [],
+      "runOptions": {
+        "runOn": "folderOpen"
+      },
+      "presentation": {
+        "reveal": "silent",
+        "panel": "shared",
+        "revealProblems": "onProblem"
+      }
+    }
+  ]
+}

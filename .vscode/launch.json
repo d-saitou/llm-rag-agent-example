@@ -1,0 +1,33 @@
+{
+  "version": "0.2.0",
+  "compounds": [
+    {
+      // backend コンテナ・frontend コンテナに同時にアタッチするデバッグ構成
+      "name": "[Dev Host] Full Stack Debug",
+      "configurations": [
+        "[Dev Host] Backend Debug"
+      ]
+    }
+  ],
+  "configurations": [
+    {
+      // backend コンテナにアタッチするデバッグ構成
+      "name": "[Dev Host] Backend Debug",
+      "type": "debugpy",
+      "request": "attach",
+      "connect": {
+        "host": "localhost",
+        "port": 5678
+      },
+      "pathMappings": [
+        {
+          "localRoot": "${workspaceFolder:Backend}",
+          "remoteRoot": "/app/backend"
+        }
+      ],
+      "preLaunchTask": "Docker Compose Up",
+      "jinja": true,
+      "justMyCode": true
+    }
+  ]
+}

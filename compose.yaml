@@ -1,9 +1,35 @@
 services:
 
+  # --- Backend (FastAPI) ---
+  backend:
+    build:
+      context: .
+      dockerfile: infra/backend/Dockerfile
+      args:
+        BACKEND_PYTHON_VERSION: "${BACKEND_PYTHON_VERSION}"
+        APP_UID: "${WSL_UID}"
+        APP_GID: "${WSL_GID}"
+    command: > # 開発環境用：debugpyデバッグ＋ホットリロード
+      uv run python -m debugpy --listen 0.0.0.0:5678 -m uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
+    depends_on:
+      db:
+        condition: service_healthy
+      redmine:
+        condition: service_healthy
+    healthcheck:
+      test: ["CMD", "python", "-c", "import urllib.request; urllib.request.urlopen('http://localhost:8000/health')"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
+    ports:
+      - "8000:8000"
+      - "5678:5678" # 開発環境用：debugpyデバッグ
+    volumes:
+      - .:/app              # 開発環境用：コンテナ内ソースのホットリロード＋git管理のためルートをマウント
+      - backend_venv:/.venv # 開発環境用：Python仮想環境ボリューム
+
   # --- DB (PostgreSQL + pgvector) ---
   db:
-    container_name: postgres
-    hostname: db
     build:
       context: .
       dockerfile: infra/db/Dockerfile
@@ -12,7 +38,7 @@ services:
     user: "${WSL_UID}:${WSL_GID}"
     # restart: always
     healthcheck:
-      test: [ "CMD-SHELL", "pg_isready -U postgres -d postgres" ]
+      test: ["CMD", "pg_isready", "-U", "postgres", "-d", "postgres"]
       interval: 5s
       timeout: 5s
       retries: 5
@@ -35,8 +61,6 @@ services:
 
   # --- Redmine ---
   redmine:
-    container_name: redmine
-    hostname: redmine
     build:
       context: .
       dockerfile: infra/redmine/Dockerfile
@@ -47,6 +71,11 @@ services:
     depends_on:
       db:
         condition: service_healthy
+    healthcheck:
+      test: ["CMD", "curl", "-f", "http://localhost:3000/"]
+      interval: 5s
+      timeout: 5s
+      retries: 5
     ports:
       - "8080:3000"
     environment:
@@ -70,4 +99,5 @@ secrets:
     file: ./infra/db/secrets/redmine_user.secret
 
 volumes:
+  backend_venv:
   db_data:

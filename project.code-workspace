@@ -1,5 +1,5 @@
 {
-  "folders": [
+  "folders": [ // マルチルート・ワークスペース設定
     {
       "name": "Backend",
       "path": "backend"
@@ -26,6 +26,17 @@
       "*.secret": "plaintext",
       "*.key": "plaintext"
     },
+    "editor.tabSize": 2,
+    "editor.insertSpaces": true,
+    "editor.formatOnSave": false,
+    "[python]": { // .backend/devcontainer.jsonの"python"セクションと一致させること
+      "editor.tabSize": 4,
+      "editor.defaultFormatter": "charliermarsh.ruff",
+      "editor.formatOnSave": true,
+      "editor.codeActionsOnSave": {
+        "source.fixAll.ruff": "always"
+      }
+    },
     "[powershell]": {
       "files.encoding": "utf8bom"
     },
@@ -41,7 +52,9 @@
   "extensions": {
     "recommendations": [
       "ms-vscode-remote.vscode-remote-extensionpack", // Remote Development
-      "ms-azuretools.vscode-docker"                   // Docker
+      "ms-azuretools.vscode-docker",                  // Docker
+      "ms-python.python",                             // Python
+      "charliermarsh.ruff"                            // Python Linter/Formatter
     ]
   }
 }

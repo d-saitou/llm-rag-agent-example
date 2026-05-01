@@ -1,0 +1,40 @@
+{
+  "name": "Backend Dev Container",
+  "dockerComposeFile": "../../compose.yaml",
+  "service": "backend",
+  "remoteUser": "appuser", // コンテナ内ユーザー ※git設定等引き継ぎ
+  "workspaceFolder": "/app/backend",
+  "overrideCommand": true,                 // コンテナ起動時：compose.yaml/command無効化(launch.json/args優先) ※debugpy重複起動回避のため
+  "postCreateCommand": "uv sync --frozen", // コンテナ起動後：コマンド実行
+  "shutdownAction": "stopCompose",         // コンテナ停止時：停止動作
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "ms-python.python",
+        "charliermarsh.ruff"
+      ],
+      "settings": {
+        "files.encoding": "utf8",
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": false,
+        "[python]": { // .project.code-workspaceの"python"セクションと一致させること
+          "editor.tabSize": 4,
+          "editor.defaultFormatter": "charliermarsh.ruff",
+          "editor.formatOnSave": true,
+          "editor.codeActionsOnSave": {
+            "source.fixAll.ruff": "always"
+          }
+        },
+        "python.defaultInterpreterPath": "/.venv/bin/python",
+        "python.analysis.extraPaths": [
+          "/app/backend"
+        ],
+        "python.terminal.activateEnvInSelectedTerminal": true
+      }
+    }
+  }
+}

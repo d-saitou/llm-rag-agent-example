@@ -1,0 +1,24 @@
+//
+// Dev Container(backend)用デバッグ構成ファイル
+//
+{
+  "version": "0.2.0",
+  "configurations": [
+    {
+      "name": "[Dev Container] Backend Debug",
+      "type": "debugpy",
+      "request": "launch",
+      "module": "uvicorn",
+      "args": [
+        "server.main:app",
+        "--host", "0.0.0.0",
+        "--port", "8000",
+        "--reload"
+      ],
+      "cwd": "${workspaceFolder}",
+      "console": "integratedTerminal",
+      "jinja": true,
+      "justMyCode": true
+    }
+  ]
+}
