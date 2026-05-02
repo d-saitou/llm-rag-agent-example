@@ -2,6 +2,7 @@ services:
 
   # --- Backend (FastAPI) ---
   backend:
+    image: llm-rag-agent-example-backend:development
     build:
       context: .
       dockerfile: infra/backend/Dockerfile
@@ -9,8 +10,7 @@ services:
         BACKEND_PYTHON_VERSION: "${BACKEND_PYTHON_VERSION}"
         APP_UID: "${WSL_UID}"
         APP_GID: "${WSL_GID}"
-    command: > # 開発環境用：debugpyデバッグ＋ホットリロード
-      uv run python -m debugpy --listen 0.0.0.0:5678 -m uvicorn server.main:app --host 0.0.0.0 --port 8000 --reload
+      target: development
     depends_on:
       db:
         condition: service_healthy
