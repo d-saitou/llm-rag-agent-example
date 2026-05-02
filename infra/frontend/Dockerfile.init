@@ -1,0 +1,55 @@
+# ========================================
+# Next.js プロジェクト初期化用 Dockerfile
+# 以下の手順で Next.js プロジェクトを初期化する。
+#
+# * compose.yaml
+#   fontend:
+#     build:
+#       context: .
+#       dockerfile: ./infra/frontend/Dockerfile.init
+#       args:
+#         APP_UID: "${WSL_UID}"
+#         APP_GID: "${WSL_GID}"
+#     working_dir: /app/frontend
+#     volumes:
+#       - ./frontend:/app/frontend
+#     ports:
+#       - "3000:3000"
+#     command: sleep infinity
+#
+# * 実行コマンド
+#   docker compose up -d frontend
+#   docker compose exec frontend bash
+#   npx create-next-app@latest . \
+#     --typescript \
+#     --eslint \
+#     --app \
+#     --no-src-dir \
+#     --import-alias "@/*" \
+#     --use-npm
+# ========================================
+
+ARG FRONTEND_NODE_VERSION=22-bookworm-slim
+ARG APP_UID=9999
+ARG APP_GID=9999
+ARG APP_USER=appuser
+ARG APP_GROUP=appgroup
+
+FROM node:${FRONTEND_NODE_VERSION}
+
+ARG APP_UID
+ARG APP_GID
+ARG APP_USER
+ARG APP_GROUP
+
+RUN groupadd -g ${APP_GID} ${APP_GROUP} && \
+    useradd -m -u ${APP_UID} -g ${APP_GROUP} -s /bin/bash ${APP_USER}
+
+WORKDIR /app/frontend
+
+RUN mkdir -p /app/frontend && \
+    chown -R ${APP_USER}:${APP_GROUP} /app
+
+USER ${APP_USER}
+
+CMD ["sleep", "infinity"]

@@ -1,5 +1,20 @@
 services:
 
+  # --- Frontend (Next.js) ---
+  frontend:
+    build:
+      context: .
+      dockerfile: ./infra/frontend/Dockerfile.init
+      args:
+        APP_UID: "${WSL_UID}"
+        APP_GID: "${WSL_GID}"
+    working_dir: /app/frontend
+    volumes:
+      - ./frontend:/app/frontend
+    ports:
+      - "3000:3000"
+    command: sleep infinity
+
   # --- Backend (FastAPI) ---
   backend:
     image: llm-rag-agent-example-backend:development
