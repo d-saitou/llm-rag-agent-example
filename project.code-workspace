@@ -20,14 +20,14 @@
       "**/node_modules/": true, // Frontend/node_modules ※コンテナのボリュームマウントで自動生成されるディレクトリの非表示設定
       "**/.next/": true         // Frontend/.next        ※コンテナのボリュームマウントで自動生成されるディレクトリの非表示設定
     },
-    "files.encoding": "utf8",
-    "files.eol": "\n",
-    "files.insertFinalNewline": true,
-    "files.trimTrailingWhitespace": true,
     "files.associations": {
       "*.secret": "plaintext",
       "*.key": "plaintext"
     },
+    "files.encoding": "utf8",
+    "files.eol": "\n",
+    "files.insertFinalNewline": true,
+    "files.trimTrailingWhitespace": true,
     "editor.tabSize": 2,
     "editor.insertSpaces": true,
     "editor.formatOnSave": false,
@@ -50,18 +50,22 @@
         "other": "off"
       }
 		},
-    "js/ts.validate.enabled": false // js/tsエラー無効化 ※frontendコンテナで開発するためprojectルートでは非表示
+    "js/ts.validate.enabled": false,                 // js/tsエラー無効化 ※frontendコンテナで開発するためprojectルートでは非表示
+    "python.analysis.diagnosticSeverityOverrides": { // pythonインポートエラー無効化 ※backendコンテナで開発するためprojectルートでは非表示
+      "reportMissingImports": "none",
+      "reportMissingModuleSource": "none"
+    }
   },
   "extensions": {
     "recommendations": [
-      "ms-vscode-remote.vscode-remote-extensionpack", // [Dev Host] Remote Development
-      "ms-azuretools.vscode-docker",                  // [Dev Host] Docker
-      "ms-python.python",                             // [Dev Host / Dev Container(backend)] Python
-      "charliermarsh.ruff",                           // [Dev Host / Dev Container(backend)] Ruff
-      "dbaeumer.vscode-eslint",                       // [Dev Host / Dev Container(frontend)] ESLint
-      "esbenp.prettier-vscode",                       // [Dev Host / Dev Container(frontend)] Prettier
-      "bradlc.vscode-tailwindcss",                    // [Dev Host / Dev Container(frontend)] Tailwind CSS IntelliSense
-      "ms-vscode.js-debug-nightly"                    // [Dev Host / Dev Container(frontend)] JavaScript Debugger (Nightly)
+      "ms-vscode-remote.vscode-remote-extensionpack", // [project(Dev Host)] Remote Development
+      "ms-azuretools.vscode-docker",                  // [project(Dev Host)] Docker
+      "ms-python.python",                             // [project(Dev Host) / backend(Dev Container)] Python
+      "charliermarsh.ruff",                           // [project(Dev Host) / backend(Dev Container)] Ruff
+      "dbaeumer.vscode-eslint",                       // [project(Dev Host) / frontend(Dev Container)] ESLint
+      "esbenp.prettier-vscode",                       // [project(Dev Host) / frontend(Dev Container)] Prettier
+      "bradlc.vscode-tailwindcss",                    // [project(Dev Host) / frontend(Dev Container)] Tailwind CSS IntelliSense
+      "ms-vscode.js-debug-nightly"                    // [project(Dev Host) / frontend(Dev Container)] JavaScript Debugger (Nightly)
     ]
   }
 }

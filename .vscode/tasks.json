@@ -32,6 +32,20 @@
       "dependsOrder": "sequence",
       "problemMatcher": []
     },
+    { // VS Code 起動 (Backend 開発用 Dev Container)
+      "label": "Dev Host: Open Backend Dev Container Workspace",
+      "type": "shell",
+      "command": "code",
+      "args": ["-n", "${workspaceFolder}/backend"],
+      "problemMatcher": []
+    },
+    { // VS Code 起動 (Frontend 開発用 Dev Container)
+      "label": "Dev Host: Open Frontend Dev Container Workspace",
+      "type": "shell",
+      "command": "code",
+      "args": ["-n", "${workspaceFolder}/frontend"],
+      "problemMatcher": []
+    },
     { // Dev Container 起動時自動生成 Docker イメージ削除
       "label": "Dev Host: Cleanup VS Code DevContainer Images",
       "type": "shell",
@@ -46,6 +60,13 @@
         "panel": "shared",
         "revealProblems": "onProblem"
       }
+    },
+    { // Dev Host ワークスペース推奨拡張機能一括インストール
+      "label": "Dev Host: Install Recommended Extensions",
+      "type": "shell",
+      "command": "bash",
+      "args": ["-c", "sed \"s|//.*$||\" \"${workspaceFolder}/project.code-workspace\" | yq -p=json -r '.extensions.recommendations[]' | xargs -n 1 code --install-extension"],
+      "problemMatcher": []
     }
   ]
 }
