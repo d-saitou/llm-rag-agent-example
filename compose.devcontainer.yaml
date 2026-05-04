@@ -1,0 +1,14 @@
+services:
+
+  frontend:
+    # 二重起動防止 ※ Next.js は frontend/.vscode/launch.json から起動
+    command: sleep infinity
+    depends_on:
+      backend:
+        condition: service_started
+
+  backend:
+    # 二重起動防止：※ FastAPI は backend/.vscode/launch.json から起動
+    command: sleep infinity
+    healthcheck:
+      disable: true

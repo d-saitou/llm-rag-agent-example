@@ -2,18 +2,25 @@ services:
 
   # --- Frontend (Next.js) ---
   frontend:
+    image: llm-rag-agent-example-frontend:development
     build:
       context: .
-      dockerfile: ./infra/frontend/Dockerfile.init
+      dockerfile: ./infra/frontend/Dockerfile
       args:
+        FRONTEND_NODE_VERSION: "${FRONTEND_NODE_VERSION}"
         APP_UID: "${WSL_UID}"
         APP_GID: "${WSL_GID}"
-    working_dir: /app/frontend
-    volumes:
-      - ./frontend:/app/frontend
+      target: development
+    depends_on:
+      backend:
+        condition: service_healthy
     ports:
       - "3000:3000"
-    command: sleep infinity
+      - "9229:9229" # 開発環境用：Node.jsデバッグ
+    volumes:
+      - .:/app # 開発環境用：コンテナ内ソースのホットリロード＋git管理のためルートをマウント
+      - frontend_node_modules:/app/frontend/node_modules
+      - frontend_next_cache:/app/frontend/.next
 
   # --- Backend (FastAPI) ---
   backend:
@@ -114,5 +121,7 @@ secrets:
     file: ./infra/db/secrets/redmine_user.secret
 
 volumes:
+  frontend_node_modules:
+  frontend_next_cache:
   backend_venv:
   db_data:

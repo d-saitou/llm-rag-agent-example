@@ -1,11 +1,8 @@
-//
-// Dev Container(backend)用デバッグ構成ファイル
-//
 {
   "version": "0.2.0",
   "configurations": [
     {
-      "name": "[Dev Container] Backend Debug",
+      "name": "Dev Container: Backend Debug",
       "type": "debugpy",
       "request": "launch",
       "module": "uvicorn",

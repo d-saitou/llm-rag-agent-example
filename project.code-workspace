@@ -14,9 +14,11 @@
     }
   ],
   "settings": {
-    "files.exclude": {
-      "backend/": true, // Root内のbackendフォルダを隠す
-      "frontend/": true // Root内のfrontendフォルダを隠す
+    "files.exclude": { // ファイル/フォルダ非表示設定
+      "backend/": true,         // Root/backend  ※Root内非表示設定
+      "frontend/": true,        // Root/frontend ※Root内非表示設定
+      "**/node_modules/": true, // Frontend/node_modules ※コンテナのボリュームマウントで自動生成されるディレクトリの非表示設定
+      "**/.next/": true         // Frontend/.next        ※コンテナのボリュームマウントで自動生成されるディレクトリの非表示設定
     },
     "files.encoding": "utf8",
     "files.eol": "\n",
@@ -47,14 +49,19 @@
         "strings": "off",
         "other": "off"
       }
-		}
+		},
+    "js/ts.validate.enabled": false // js/tsエラー無効化 ※frontendコンテナで開発するためprojectルートでは非表示
   },
   "extensions": {
     "recommendations": [
-      "ms-vscode-remote.vscode-remote-extensionpack", // Remote Development
-      "ms-azuretools.vscode-docker",                  // Docker
-      "ms-python.python",                             // Python
-      "charliermarsh.ruff"                            // Python Linter/Formatter
+      "ms-vscode-remote.vscode-remote-extensionpack", // [Dev Host] Remote Development
+      "ms-azuretools.vscode-docker",                  // [Dev Host] Docker
+      "ms-python.python",                             // [Dev Host / Dev Container(backend)] Python
+      "charliermarsh.ruff",                           // [Dev Host / Dev Container(backend)] Ruff
+      "dbaeumer.vscode-eslint",                       // [Dev Host / Dev Container(frontend)] ESLint
+      "esbenp.prettier-vscode",                       // [Dev Host / Dev Container(frontend)] Prettier
+      "bradlc.vscode-tailwindcss",                    // [Dev Host / Dev Container(frontend)] Tailwind CSS IntelliSense
+      "ms-vscode.js-debug-nightly"                    // [Dev Host / Dev Container(frontend)] JavaScript Debugger (Nightly)
     ]
   }
 }

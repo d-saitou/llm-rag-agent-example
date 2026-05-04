@@ -1,0 +1,31 @@
+{
+  "name": "Frontend Dev Container",
+  "dockerComposeFile": [
+    "../../compose.yaml",
+    "../../compose.devcontainer.yaml"
+  ],
+  "service": "frontend",
+  "remoteUser": "appuser", // コンテナ内ユーザー ※git設定等引き継ぎ
+  "workspaceFolder": "/app/frontend",
+  "postCreateCommand": "npm install",
+  "shutdownAction": "stopCompose",
+  "customizations": {
+    "vscode": {
+      "extensions": [
+        "dbaeumer.vscode-eslint",    // ESLint
+        "esbenp.prettier-vscode",    // Prettier
+        "bradlc.vscode-tailwindcss", // Tailwind CSS IntelliSense
+        "ms-vscode.js-debug-nightly" // JavaScript Debugger (Nightly)
+      ],
+      "settings": {
+        "files.encoding": "utf8",
+        "files.eol": "\n",
+        "files.insertFinalNewline": true,
+        "files.trimTrailingWhitespace": true,
+        "editor.tabSize": 2,
+        "editor.insertSpaces": true,
+        "editor.formatOnSave": false
+      }
+    }
+  }
+}

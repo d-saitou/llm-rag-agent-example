@@ -1,12 +1,14 @@
 {
   "name": "Backend Dev Container",
-  "dockerComposeFile": "../../compose.yaml",
+  "dockerComposeFile": [
+    "../../compose.yaml",
+    "../../compose.devcontainer.yaml"
+  ],
   "service": "backend",
   "remoteUser": "appuser", // コンテナ内ユーザー ※git設定等引き継ぎ
   "workspaceFolder": "/app/backend",
-  "overrideCommand": true,                 // コンテナ起動時：compose.yaml/command無効化(launch.json/args優先) ※debugpy重複起動回避のため
-  "postCreateCommand": "uv sync --frozen", // コンテナ起動後：コマンド実行
-  "shutdownAction": "stopCompose",         // コンテナ停止時：停止動作
+  "postCreateCommand": "uv sync --frozen",
+  "shutdownAction": "stopCompose",
   "customizations": {
     "vscode": {
       "extensions": [

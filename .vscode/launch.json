@@ -1,18 +1,19 @@
 {
   "version": "0.2.0",
   "compounds": [
-    {
-      // backend コンテナ・frontend コンテナに同時にアタッチするデバッグ構成
-      "name": "[Dev Host] Full Stack Debug",
+    { // backend コンテナ・frontend コンテナに同時にアタッチするデバッグ構成
+      "name": "Dev Host: Full Stack Debug",
+      "preLaunchTask": "Dev Host: Prepare Full Stack Debug",
       "configurations": [
-        "[Dev Host] Backend Debug"
+        "Dev Host: Backend Debug",
+        "Dev Host: Frontend Debug",
+        "Dev Host: Frontend Browser Debug"
       ]
     }
   ],
   "configurations": [
-    {
-      // backend コンテナにアタッチするデバッグ構成
-      "name": "[Dev Host] Backend Debug",
+    { // backend コンテナにアタッチするデバッグ構成
+      "name": "Dev Host: Backend Debug",
       "type": "debugpy",
       "request": "attach",
       "connect": {
@@ -25,9 +26,37 @@
           "remoteRoot": "/app/backend"
         }
       ],
-      "preLaunchTask": "Docker Compose Up",
       "jinja": true,
       "justMyCode": true
+    },
+    { // frontend コンテナにアタッチするデバッグ構成
+      // NOTE:
+      //  ブレイクポイント設定時に上手くデバッグできないため、frontend/package.json の scripts.dev に"--webpack" を追記。
+      //  (Turbopack　→ Webpack 変更)
+      "name": "Dev Host: Frontend Debug",
+      "type": "node",
+      "request": "attach",
+      "address": "localhost",
+      "port": 9229,
+      "localRoot": "${workspaceFolder:Frontend}",
+      "remoteRoot": "/app/frontend",
+      "skipFiles": [
+        "<node_internals>/**"
+      ],
+      "sourceMapPathOverrides": {
+        "/app/frontend/*": "${workspaceFolder:Frontend}/*",
+        "file:///app/frontend/*": "${workspaceFolder:Frontend}/*",
+        "webpack://_N_E/./*": "${workspaceFolder:Frontend}/*",
+        "webpack://_N_E/*": "${workspaceFolder:Frontend}/*",
+        "webpack:///./*": "${workspaceFolder:Frontend}/*"
+      }
+    },
+    { // frontend ブラウザデバッグ構成
+      "name": "Dev Host: Frontend Browser Debug",
+      "type": "chrome",
+      "request": "launch",
+      "url": "http://localhost:3000",
+      "webRoot": "${workspaceFolder:Frontend}"
     }
   ]
 }
