@@ -16,4 +16,5 @@
     - prepare_common
     - prepare_docker
     - prepare_container_db
+    - prepare_container_llmproxy
     - prepare_container_redmine

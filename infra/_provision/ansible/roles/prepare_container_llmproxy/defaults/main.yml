@@ -1,0 +1,9 @@
+---
+# LLMProxy コンテナ用 secrets ディレクトリパス
+llmproxy_secrets_dir: "/home/{{ wsl_user_name }}/{{ git_repo_name }}/infra/llmproxy/secrets"
+
+# LLMProxy API キーファイルパス
+llmproxy_litellm_master_key_file: "{{ llmproxy_secrets_dir }}/llmproxy_litellm_master.key"
+
+# Groq API キーファイルパス
+llmproxy_groq_api_key_file: "{{ llmproxy_secrets_dir }}/llmproxy_groq_api.key"

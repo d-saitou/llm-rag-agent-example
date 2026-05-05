@@ -1,0 +1,35 @@
+model_list:
+  - model_name: chat-groq
+    litellm_params:
+      # 使用可能モデル確認：curl https://api.groq.com/openai/v1/models -H "Authorization: Bearer ${GROK APIキー}"
+      model: groq/llama-3.3-70b-versatile
+      api_key: os.environ/GROQ_API_KEY
+
+  # - model_name: chat-openai
+  #   litellm_params:
+  #     model: openai/gpt-4o-mini
+  #     api_key: os.environ/OPENAI_API_KEY
+
+general_settings:
+  master_key: os.environ/LITELLM_MASTER_KEY
+  request_timeout: 60
+  max_parallel_requests: 20
+  set_verbose: true
+  allowed_models:
+    - chat-groq
+    # - chat-openai
+
+router_settings:
+  # fallbacks:
+  #   - {"chat-groq": ["chat-openai"]}
+  # routing_strategy: least-busy
+  num_retries: 2
+
+# litellm_settings:
+#   cache: true
+#   cache_params:
+#     type: redis
+#     host: redis
+#     port: 6379
+#   stream: true
+#   failure_callback: ["logger"]

@@ -1,0 +1,28 @@
+---
+- name: LLMProxy コンテナ用 secrets ディレクトリ作成
+  ansible.builtin.file:
+    path: "{{ llmproxy_secrets_dir }}"
+    state: directory
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
+    mode: '0700'
+
+- name: LiteLLM master キーファイル生成 (ファイルが存在しない場合のみ)
+  ansible.builtin.shell:
+    cmd: "openssl rand -hex 32 > {{ llmproxy_litellm_master_key_file }}"
+    creates: "{{ llmproxy_litellm_master_key_file }}"
+
+- name: LiteLLM master キーファイル権限設定
+  ansible.builtin.file:
+    path: "{{ llmproxy_litellm_master_key_file }}"
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
+    mode: '0600'
+
+- name: GROQ API キーファイル生成
+  ansible.builtin.copy:
+    dest: "{{ llmproxy_groq_api_key_file }}"
+    content: "{{ llmproxy_groq_api_key }}"
+    owner: "{{ wsl_uid }}"
+    group: "{{ wsl_gid }}"
+    mode: '0600'

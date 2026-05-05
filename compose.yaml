@@ -81,6 +81,24 @@ services:
       - ./infra/db/initdb.d:/docker-entrypoint-initdb.d
       - ./data/db/backups/postgres:/var/backups/postgres
 
+  # --- LLM Proxy (LiteLLM) ---
+  llmproxy:
+    build:
+      context: .
+      dockerfile: infra/llmproxy/Dockerfile
+      args:
+        LLMPROXY_PYTHON_VERSION: "${LLMPROXY_PYTHON_VERSION}"
+        LLMPROXY_LITELLM_VERSION: "${LLMPROXY_LITELLM_VERSION}"
+        APP_UID: "${WSL_UID}"
+        APP_GID: "${WSL_GID}"
+    ports:
+      - "4000:4000"
+    secrets:
+      - llmproxy_litellm_master_key
+      - llmproxy_groq_api_key
+    volumes:
+      - ./infra/llmproxy/config/config.yaml:/app/config.yaml
+
   # --- Redmine ---
   redmine:
     build:
@@ -119,6 +137,10 @@ secrets:
     file: ./infra/db/secrets/app_rag_user.secret
   db_redmine_user:
     file: ./infra/db/secrets/redmine_user.secret
+  llmproxy_litellm_master_key:
+    file: ./infra/llmproxy/secrets/llmproxy_litellm_master.key
+  llmproxy_groq_api_key:
+    file: ./infra/llmproxy/secrets/llmproxy_groq_api.key
 
 volumes:
   frontend_node_modules:
